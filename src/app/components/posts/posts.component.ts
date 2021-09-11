@@ -1,35 +1,46 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+
+// service
+import { PostService } from 'src/app/service/post.service';
 
 @Component({
   selector: 'app-posts',
   templateUrl: './posts.component.html',
-  styleUrls: ['./posts.component.css']
+  styleUrls: ['./posts.component.css'],
 })
 export class PostsComponent implements OnInit {
+  posts: any;
 
-  posts:any
-  private url = "http://jsonplaceholder.typicode.com/posts"
-
-  constructor(private http:HttpClient) { 
-    http.get(this.url)
-    .subscribe(r => {
-      const data = r;
-      this.posts = data;
-    })
-  }
+  constructor(private service: PostService) {}
 
   ngOnInit(): void {
+    this.service.getPosts().subscribe((r) => {
+      const data = r;
+      this.posts = data;
+    });
   }
 
-  createPost(input:HTMLInputElement){
-    let post = {title:input.value}
+  createPost(input: HTMLInputElement) {
+    let post = { title: input.value };
 
-    this.http.post(this.url,JSON.stringify(post))
-    .subscribe(r => {
-      this.posts.splice(0,0,post)
+    this.service.createPost(post).subscribe((r) => {
+      this.posts.splice(0, 0, post);
+      console.log(r);
+    });
+  }
+
+  updatePost(){
+    let post = {id:100, title:"LOL"};
+
+    this.service.updatePost(post).subscribe(r => {
       console.log(r)
     })
   }
 
+  deletePost(){
+    this.service.deletePost(100)
+    .subscribe(r => {
+      console.log(r)
+    })
+  }
 }
